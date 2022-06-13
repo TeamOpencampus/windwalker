@@ -18,7 +18,7 @@ func main() {
 
 func run() error {
 	config := LoadConfig()
-	db, err := models.SetupDatabase(config.Dsn)
+	db, err := models.SetupDatabase(config.Dsn, config.Mode)
 	if err != nil {
 		return err
 	}
@@ -41,4 +41,8 @@ func (s *Server) Run(port string) error {
 	s.engine.Use(WithDatabase(s.database))
 	s.Routes()
 	return s.engine.Run(fmt.Sprintf(":%s", port))
+}
+
+func NewServer(engine *gin.Engine, database *gorm.DB) *Server {
+	return &Server{engine: engine, database: database}
 }

@@ -33,6 +33,10 @@ go.work
 .env
 .env.*
 
+# Database files
+*.db
+*.sqlite
+
 # End of https://www.toptal.com/developers/gitignore/api/go
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode

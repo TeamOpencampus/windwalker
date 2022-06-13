@@ -11,10 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewServer(engine *gin.Engine, database *gorm.DB) *Server {
-	return &Server{engine: engine, database: database}
-}
-
 func WithDatabase(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
