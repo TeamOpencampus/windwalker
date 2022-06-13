@@ -49,7 +49,7 @@ func WithAuthentication() gin.HandlerFunc {
 			return []byte("secret_key"), nil
 		})
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			ctx.Set("ID", claims.ID)
+			ctx.Set("ID", claims.Subject)
 			ctx.Set("ROLE", claims.Role)
 			ctx.Next()
 		} else {
@@ -66,7 +66,7 @@ func GetToken(id uint, role string, time time.Time) (string, error) {
 	claims := &CustomClaims{
 		role,
 		jwt.RegisteredClaims{
-			ID:        fmt.Sprintf("%d", id),
+			Subject:   fmt.Sprintf("%d", id),
 			ExpiresAt: jwt.NewNumericDate(time),
 		},
 	}
