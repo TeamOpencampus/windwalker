@@ -24,6 +24,9 @@ func run() error {
 	}
 
 	router := gin.Default()
+	if config.Mode == "PROD" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	server := NewServer(router, db)
 
 	return server.Run(config.Port)
