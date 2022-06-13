@@ -11,6 +11,7 @@ func (s *Server) Routes() {
 		v1.POST("/reset")
 		secure := v1.Group("/secure", WithAuthentication())
 		{
+			secure.POST("/logout", s.Logout)
 			secure.GET("/onboarding")
 			secure.POST("/verify")
 

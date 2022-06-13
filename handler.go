@@ -146,7 +146,11 @@ func (s *Server) Register(ctx *gin.Context) {
 }
 
 func (s *Server) Logout(ctx *gin.Context) {
-
+	ctx.SetCookie("token", "", 0, "/", "localhost", false, false)
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   "You have been logged out successfully.",
+	})
 }
 
 func (s *Server) Verify(ctx *gin.Context) {
