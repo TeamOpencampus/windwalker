@@ -22,7 +22,7 @@ func run() error {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 	suger := logger.Sugar()
-	database, err := models.SetupDatabase("windwalker.sqlite")
+	database, err := models.SetupDatabase()
 	if err != nil {
 		return err
 	}
