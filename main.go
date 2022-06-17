@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"go.uber.org/zap"
 	"log"
 	"windwalker/middleware"
 	"windwalker/models"
+
+	"go.uber.org/zap"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -19,38 +19,37 @@ func main() {
 }
 
 func run() error {
-	config := LoadConfig()
-	db, err := models.SetupDatabase(config.Dsn, config.Mode)
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	suger := logger.Sugar()
+	database, err := models.SetupDatabase("windwalker.sqlite")
 	if err != nil {
 		return err
 	}
 
 	router := gin.Default()
-	if config.Mode == "PROD" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-	server := NewServer(router, db)
+	server := NewServer(router, database, suger)
 
-	return server.Run(config.Port)
+	return server.Run()
 }
 
 type Server struct {
 	engine   *gin.Engine
 	database *gorm.DB
+	logger   *zap.SugaredLogger
 }
 
-func (s *Server) Run(port string) error {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	suger := logger.Sugar()
+func (s *Server) Run() error {
+
 	s.engine.Use(cors.New(cors.Config{
 		AllowAllOrigins: true, // disable in production
 	}))
-	s.engine.Use(middleware.WithDatabase(s.database), middleware.ErrorHandler(suger))
+	s.engine.Use(middleware.WithDatabase(s.database))
+	s.engine.Use(middleware.ErrorHandler(s.logger))
 	s.Routes()
-	return s.engine.Run(fmt.Sprintf(":%s", port))
+	return s.engine.Run()
 }
 
-func NewServer(engine *gin.Engine, database *gorm.DB) *Server {
-	return &Server{engine: engine, database: database}
+func NewServer(engine *gin.Engine, database *gorm.DB, logger *zap.SugaredLogger) *Server {
+	return &Server{engine: engine, database: database, logger: logger}
 }
