@@ -8,7 +8,7 @@ COPY . ./
 RUN go build -o windwalker
 
 # Stage 2: Deploy
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/base-debian11 AS deploy
 WORKDIR /
 COPY --from=build /app/windwalker ./app
 ENV GIN_MODE=release

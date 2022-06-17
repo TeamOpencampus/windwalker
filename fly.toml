@@ -5,7 +5,8 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [build]
-  image = "asimbera/windwalker"
+  dockerfile = "Dockerfile"
+  build-target = "deploy"
 
 [env]
   PORT = "8080"
