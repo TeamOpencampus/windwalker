@@ -1,0 +1,10 @@
+# Dotfiles
+.env
+.env.*
+# Platform specific files
+.github/*
+.idea/*
+.vscode/*
+# Database files
+*.sqlite
+*.db
