@@ -41,9 +41,7 @@ type Server struct {
 
 func (s *Server) Run() error {
 
-	s.engine.Use(cors.New(cors.Config{
-		AllowAllOrigins: true, // disable in production
-	}))
+	s.engine.Use(cors.Default())
 	s.engine.Use(middleware.WithDatabase(s.database))
 	s.engine.Use(middleware.ErrorHandler())
 	s.Routes()
