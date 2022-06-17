@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ErrorResponse struct {
@@ -18,13 +18,12 @@ func NewErrorResponse(code string, message string) ErrorResponse {
 	}
 }
 
-func ErrorHandler(logger *zap.SugaredLogger) gin.HandlerFunc {
+func ErrorHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Next()
 
 		// handle errors after middleware and routes
 		for _, code := range ctx.Errors.Errors() {
-			logger.Error(code)
 			switch code {
 			case "auth/no-cookie":
 				ctx.AbortWithStatusJSON(http.StatusUnauthorized, NewErrorResponse(code, "cookie `token` not found"))

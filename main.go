@@ -45,7 +45,7 @@ func (s *Server) Run() error {
 		AllowAllOrigins: true, // disable in production
 	}))
 	s.engine.Use(middleware.WithDatabase(s.database))
-	s.engine.Use(middleware.ErrorHandler(s.logger))
+	s.engine.Use(middleware.ErrorHandler())
 	s.Routes()
 	return s.engine.Run()
 }
