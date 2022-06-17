@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,15 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func WithDatabase(db *gorm.DB) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-		defer cancel()
-		ctx.Set("DB", db.WithContext(timeoutCtx))
-		ctx.Next()
-	}
-}
-
 //GetDatabase returns database from gin context.
 func GetDatabase(ctx *gin.Context) *gorm.DB {
 	return ctx.MustGet("DB").(*gorm.DB)
@@ -28,34 +18,6 @@ func GetDatabase(ctx *gin.Context) *gorm.DB {
 type CustomClaims struct {
 	Role string `json:"role"`
 	jwt.RegisteredClaims
-}
-
-//WithAuthentication is a gin middleware which handles JWT sessions.
-func WithAuthentication() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		tokenString, err := ctx.Cookie("token")
-		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status": "error",
-				"data":   "token cookie is not set.",
-			})
-			return
-		}
-		token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(t *jwt.Token) (interface{}, error) {
-			return []byte("secret_key"), nil
-		})
-		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			ctx.Set("ID", claims.Subject)
-			ctx.Set("ROLE", claims.Role)
-			ctx.Next()
-		} else {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"status": "error",
-				"data":   err.Error(),
-			})
-			return
-		}
-	}
 }
 
 func GetToken(id uint, role string, time time.Time) (string, error) {
@@ -70,15 +32,10 @@ func GetToken(id uint, role string, time time.Time) (string, error) {
 	return token.SignedString([]byte("secret_key"))
 }
 
-func WithAuthorization(role string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		if ctx.MustGet("ROLE").(string) != role {
-			ctx.JSON(http.StatusForbidden, gin.H{
-				"status": "error",
-				"data":   "You don't have permission to view this resource.",
-			})
-			return
-		}
-		ctx.Next()
-	}
+type SuccessResponse[T any] struct {
+	Data T `json:"data,omitempty"`
+}
+
+func NewSuccessResponse[T any](ctx *gin.Context, data T) {
+	ctx.JSON(http.StatusOK, SuccessResponse[T]{Data: data})
 }
