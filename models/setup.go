@@ -19,7 +19,14 @@ func SetupDatabase(dsn string, mode string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := db.AutoMigrate(&User{}, &Profile{}, &AcademicProfile{}, &WorkProfile{}); err != nil {
+	if err := db.AutoMigrate(
+		&User{},
+		&Profile{},
+		&AcademicProfile{},
+		&WorkProfile{},
+		&CollegeProfile{},
+		&Department{},
+	); err != nil {
 		return nil, err
 	}
 
