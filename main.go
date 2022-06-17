@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"log"
+	"windwalker/middleware"
 	"windwalker/models"
 
 	"github.com/gin-contrib/cors"
@@ -38,10 +40,13 @@ type Server struct {
 }
 
 func (s *Server) Run(port string) error {
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	suger := logger.Sugar()
 	s.engine.Use(cors.New(cors.Config{
 		AllowAllOrigins: true, // disable in production
 	}))
-	s.engine.Use(WithDatabase(s.database))
+	s.engine.Use(middleware.WithDatabase(s.database), middleware.ErrorHandler(suger))
 	s.Routes()
 	return s.engine.Run(fmt.Sprintf(":%s", port))
 }
