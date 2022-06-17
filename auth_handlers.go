@@ -2,11 +2,12 @@ package main
 
 import (
 	"errors"
+	"time"
+	"windwalker/models"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
-	"windwalker/models"
 )
 
 func (s *Server) Login(ctx *gin.Context) {
@@ -40,15 +41,22 @@ func (s *Server) Login(ctx *gin.Context) {
 
 	// all ok, return jwt
 	sessionToken, err := GetToken(user.ID, user.Role, time.Now().Add(time.Hour*10))
-	// refreshToken, err := GetToken(user.ID, time.Now().Add(time.Hour*24*10))
+	if err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+	refreshToken, err := GetToken(user.ID, user.Role, time.Now().Add(time.Hour*24*10))
 	if err != nil {
 		_ = ctx.Error(errors.New("auth/internal-server-error"))
 		return
 	}
 
-	ctx.SetCookie("token", sessionToken, 60*60*10, "/", "localhost", false, false)
+	// ctx.SetCookie("token", sessionToken, 60*60*10, "/", "localhost", false, false)
 	// ctx.SetCookie("refresh_token", refreshToken, 60*60*10, "/", "localhost", false, false)
-	NewSuccessResponse(ctx, "signed in")
+	NewSuccessResponse(ctx, gin.H{
+		"token":         sessionToken,
+		"refresh_token": refreshToken,
+	})
 }
 
 func (s *Server) Register(ctx *gin.Context) {
@@ -90,19 +98,23 @@ func (s *Server) Register(ctx *gin.Context) {
 
 	// all ok, return jwt
 	sessionToken, err := GetToken(user.ID, user.Role, time.Now().Add(time.Hour*10))
-	// refreshToken, err := GetToken(user.ID, time.Now().Add(time.Hour*24*10))
+	if err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+	refreshToken, err := GetToken(user.ID, user.Role, time.Now().Add(time.Hour*24*10))
 	if err != nil {
 		_ = ctx.Error(errors.New("misc/internal-server-error"))
 		return
 	}
 
-	ctx.SetCookie("token", sessionToken, 60*60*10, "/", "localhost", false, false)
-	// ctx.SetCookie("refresh_token", refreshToken, 60*60*10, "/", "localhost", false, false)
-	NewSuccessResponse(ctx, "account created")
+	NewSuccessResponse(ctx, gin.H{
+		"token":         sessionToken,
+		"refresh_token": refreshToken,
+	})
 }
 
 func (s *Server) Logout(ctx *gin.Context) {
-	ctx.SetCookie("token", "", 0, "/", "localhost", false, false)
 	NewSuccessResponse(ctx, "logged out")
 }
 
