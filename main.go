@@ -40,8 +40,10 @@ type Server struct {
 }
 
 func (s *Server) Run() error {
-
-	s.engine.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowCredentials = true
+	s.engine.Use(cors.New(config))
 	s.engine.Use(middleware.WithDatabase(s.database))
 	s.engine.Use(middleware.ErrorHandler())
 	s.Routes()
