@@ -11,5 +11,6 @@ RUN go build -o windwalker
 FROM gcr.io/distroless/base-debian11
 WORKDIR /
 COPY --from=build /app/windwalker ./app
+ENV GIN_MODE=release
 EXPOSE 8080
 ENTRYPOINT [ "/app" ]
