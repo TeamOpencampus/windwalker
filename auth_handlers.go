@@ -54,6 +54,8 @@ func (s *Server) Login(ctx *gin.Context) {
 	// ctx.SetCookie("token", sessionToken, 60*60*10, "/", "localhost", false, false)
 	// ctx.SetCookie("refresh_token", refreshToken, 60*60*10, "/", "localhost", false, false)
 	NewSuccessResponse(ctx, gin.H{
+		"id":            user.ID,
+		"role":          user.Role,
 		"token":         sessionToken,
 		"refresh_token": refreshToken,
 	})
@@ -109,6 +111,8 @@ func (s *Server) Register(ctx *gin.Context) {
 	}
 
 	NewSuccessResponse(ctx, gin.H{
+		"id":            user.ID,
+		"role":          user.Role,
 		"token":         sessionToken,
 		"refresh_token": refreshToken,
 	})
