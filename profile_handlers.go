@@ -2,10 +2,11 @@ package main
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"windwalker/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func (s *Server) GetProfile(ctx *gin.Context) {
@@ -44,6 +45,12 @@ func (s *Server) CreateBasicProfile(ctx *gin.Context) {
 		_ = ctx.Error(errors.New("misc/internal-server-error"))
 		return
 	}
+	profile.BasicProfile = data
+	if err := db.Save(profile).Error; err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+
 	NewSuccessResponse(ctx, "basic profile updated")
 }
 
