@@ -11,4 +11,7 @@ type User struct {
 
 	// Self Reference
 	AssociatedUsers []*User `gorm:"many2many:user_associated_users"`
+	Companies       []Company
+	Posts           []*Post `gorm:"many2many:post_students"`
+	CompanyID       uint
 }

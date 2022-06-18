@@ -29,6 +29,8 @@ func SetupDatabase() (*gorm.DB, error) {
 		&WorkProfile{},
 		&CollegeProfile{},
 		&Department{},
+		&Company{},
+		&Post{},
 	); err != nil {
 		return nil, err
 	}
