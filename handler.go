@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,19 +23,5 @@ func (s *Server) NoMethod(ctx *gin.Context) {
 // Common Handlers
 
 func (s *Server) GetOnboarding(ctx *gin.Context) {
-
-}
-
-// Handler for /secure/college routes
-
-func (s *Server) GetStudents(ctx *gin.Context) {
-
-}
-
-func (s *Server) GetCompanies(ctx *gin.Context) {
-
-}
-
-func (s *Server) GetPosts(ctx *gin.Context) {
 
 }
