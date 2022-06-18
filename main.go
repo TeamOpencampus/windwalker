@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 	"windwalker/middleware"
 	"windwalker/models"
 
@@ -40,10 +41,12 @@ type Server struct {
 }
 
 func (s *Server) Run() error {
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AllowCredentials = true
-	s.engine.Use(cors.New(config))
+	s.engine.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE", "HEAD"},
+		AllowHeaders:    []string{"Authorization", "Content-Type"},
+		MaxAge:          12 * time.Hour,
+	}))
 	s.engine.Use(middleware.WithDatabase(s.database))
 	s.engine.Use(middleware.ErrorHandler())
 	s.Routes()
