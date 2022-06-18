@@ -32,10 +32,6 @@ func GetToken(id uint, role string, time time.Time) (string, error) {
 	return token.SignedString([]byte("secret_key"))
 }
 
-type SuccessResponse[T any] struct {
-	Data T `json:"data,omitempty"`
-}
-
 func NewSuccessResponse[T any](ctx *gin.Context, data T) {
-	ctx.JSON(http.StatusOK, SuccessResponse[T]{Data: data})
+	ctx.JSON(http.StatusOK, data)
 }
