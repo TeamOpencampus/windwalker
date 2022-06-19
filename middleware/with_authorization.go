@@ -7,7 +7,8 @@ import (
 
 func WithAuthorization(role string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if ctx.MustGet("ROLE").(string) != role {
+		r := ctx.MustGet("ROLE").(string)
+		if r != role {
 			ctx.Abort()
 			_ = ctx.Error(errors.New("auth/no-permission"))
 			return

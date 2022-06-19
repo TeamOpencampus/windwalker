@@ -40,16 +40,14 @@ func (s *Server) Routes() {
 
 			college := secure.Group("/college", middleware.WithAuthorization("college"))
 			{
+				college.GET("/profile", s.GetCollegeProfile)
+				college.POST("/profile", s.UpdateCollegeProfile)
 				college.GET("/students", s.GetStudents)           // get list of student
 				college.GET("/companies", s.GetCompanies)         // get list of companies
 				college.POST("/companies", s.CreateCompany)       // create new company
 				college.DELETE("/companies/:id", s.DeleteCompany) // delete a company
 				college.GET("/posts", s.GetPosts)                 // get list of posts
 
-				// profile := college.Group("/profile")
-				{
-
-				}
 			}
 		}
 	}

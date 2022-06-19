@@ -55,11 +55,11 @@ type AdditionalDocuments struct {
 
 type CollegeProfile struct {
 	BaseModel
-	Name        string       `json:"name,omitempty"`
-	Phone       string       `json:"phone,omitempty"`
-	Address     string       `json:"address,omitempty"`
-	Type        string       `json:"type,omitempty"`
-	Departments []Department `json:"departments,omitempty"`
+	Name        string       `json:"name,omitempty" binding:"required"`
+	Phone       string       `json:"phone,omitempty" binding:"required"`
+	Address     string       `json:"address,omitempty" binding:"required"`
+	Type        string       `json:"type,omitempty" binding:"required"`
+	Departments []Department `json:"-"`
 
 	// Reference
 	UserID uint `json:"-"`
