@@ -6,53 +6,32 @@ import (
 	"windwalker/middleware"
 	"windwalker/models"
 
-	"go.uber.org/zap"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func main() {
-	if err := run(); err != nil {
+	db, err := models.SetupDatabase()
+	if err != nil {
+		log.Fatalln("Failed to connect to database: ", err)
+	}
+	if err := SetupRouter(db).Run(); err != nil {
 		log.Fatalln("Failed to start: ", err)
 	}
 }
 
-func run() error {
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	suger := logger.Sugar()
-	database, err := models.SetupDatabase()
-	if err != nil {
-		return err
-	}
-
+func SetupRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
-	server := NewServer(router, database, suger)
-
-	return server.Run()
-}
-
-type Server struct {
-	engine   *gin.Engine
-	database *gorm.DB
-	logger   *zap.SugaredLogger
-}
-
-func (s *Server) Run() error {
-	s.engine.Use(cors.New(cors.Config{
+	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE", "HEAD"},
 		AllowHeaders:    []string{"Authorization", "Content-Type"},
 		MaxAge:          12 * time.Hour,
 	}))
-	s.engine.Use(middleware.WithDatabase(s.database))
-	s.engine.Use(middleware.ErrorHandler())
-	s.Routes()
-	return s.engine.Run()
-}
+	router.Use(middleware.WithDatabase(db))
+	router.Use(middleware.ErrorHandler())
+	SetupRoutes(router)
 
-func NewServer(engine *gin.Engine, database *gorm.DB, logger *zap.SugaredLogger) *Server {
-	return &Server{engine: engine, database: database, logger: logger}
+	return router
 }

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) GetProfile(ctx *gin.Context) {
+func GetProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
 	var profile models.Profile
@@ -26,7 +26,7 @@ func (s *Server) GetProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, profile)
 }
 
-func (s *Server) CreateBasicProfile(ctx *gin.Context) {
+func CreateBasicProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
 
@@ -54,7 +54,7 @@ func (s *Server) CreateBasicProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "basic profile updated")
 }
 
-func (s *Server) CreateAcademicProfile(ctx *gin.Context) {
+func CreateAcademicProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
 
@@ -80,7 +80,7 @@ func (s *Server) CreateAcademicProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "record created")
 }
 
-func (s *Server) UpdateAcademicProfile(ctx *gin.Context) {
+func UpdateAcademicProfile(ctx *gin.Context) {
 	var result struct{ Count uint }
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
@@ -127,7 +127,7 @@ func (s *Server) UpdateAcademicProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "record updated")
 }
 
-func (s *Server) DeleteAcademicProfile(ctx *gin.Context) {
+func DeleteAcademicProfile(ctx *gin.Context) {
 	var result struct{ Count uint }
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
@@ -156,7 +156,7 @@ func (s *Server) DeleteAcademicProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "record deleted")
 }
 
-func (s *Server) CreateWorkProfile(ctx *gin.Context) {
+func CreateWorkProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
 
@@ -191,7 +191,7 @@ func (s *Server) CreateWorkProfile(ctx *gin.Context) {
 
 }
 
-func (s *Server) UpdateWorkProfile(ctx *gin.Context) {
+func UpdateWorkProfile(ctx *gin.Context) {
 	var result struct{ Count uint }
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
@@ -250,7 +250,7 @@ func (s *Server) UpdateWorkProfile(ctx *gin.Context) {
 	})
 }
 
-func (s *Server) DeleteWorkProfile(ctx *gin.Context) {
+func DeleteWorkProfile(ctx *gin.Context) {
 	var result struct{ Count uint }
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)

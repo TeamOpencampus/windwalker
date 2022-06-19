@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) GetCollegeProfile(ctx *gin.Context) {
+func GetCollegeProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
 	var profile models.CollegeProfile
@@ -19,7 +19,7 @@ func (s *Server) GetCollegeProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, profile)
 
 }
-func (s *Server) UpdateCollegeProfile(ctx *gin.Context) {
+func UpdateCollegeProfile(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
 
@@ -51,7 +51,7 @@ func (s *Server) UpdateCollegeProfile(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "profile updated")
 }
 
-func (s *Server) GetStudents(ctx *gin.Context) {
+func GetStudents(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
 	var user models.User
@@ -66,7 +66,7 @@ func (s *Server) GetStudents(ctx *gin.Context) {
 	}
 }
 
-func (s *Server) GetCompanies(ctx *gin.Context) {
+func GetCompanies(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
 	var companies []struct {
@@ -95,7 +95,7 @@ func (s *Server) GetCompanies(ctx *gin.Context) {
 	NewSuccessResponse(ctx, companies)
 }
 
-func (s *Server) CreateCompany(ctx *gin.Context) {
+func CreateCompany(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
 	var data models.Company
@@ -112,7 +112,7 @@ func (s *Server) CreateCompany(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "record created")
 }
 
-func (s *Server) DeleteCompany(ctx *gin.Context) {
+func DeleteCompany(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	id := ctx.MustGet("ID").(string)
 	cid := ctx.Param("id")
@@ -125,7 +125,7 @@ func (s *Server) DeleteCompany(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "record deleted")
 }
 
-func (s *Server) GetPosts(ctx *gin.Context) {
+func GetPosts(ctx *gin.Context) {
 	// db := GetDatabase(ctx)
 	// db.
 }

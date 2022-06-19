@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *Server) Login(ctx *gin.Context) {
+func Login(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	// validate fields
 	var data struct {
@@ -61,7 +61,7 @@ func (s *Server) Login(ctx *gin.Context) {
 	})
 }
 
-func (s *Server) Register(ctx *gin.Context) {
+func Register(ctx *gin.Context) {
 	db := GetDatabase(ctx)
 	// validate fields
 	var data struct {
@@ -118,14 +118,14 @@ func (s *Server) Register(ctx *gin.Context) {
 	})
 }
 
-func (s *Server) Logout(ctx *gin.Context) {
+func Logout(ctx *gin.Context) {
 	NewSuccessResponse(ctx, "logged out")
 }
 
-func (s *Server) Reset(ctx *gin.Context) {
+func Reset(ctx *gin.Context) {
 
 }
 
-func (s *Server) VerifyEmail(ctx *gin.Context) {
+func VerifyEmail(ctx *gin.Context) {
 
 }
