@@ -11,7 +11,7 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	db, err := models.SetupDatabase()
+	db, err := models.SetupDatabase(":memory:")
 	assert.NoError(t, err, "Database should setup correctly.")
 	r := SetupRouter(db)
 	t.Run("HealthCheckHandler", func(t *testing.T) {

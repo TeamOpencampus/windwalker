@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	db, err := models.SetupDatabase()
+	db, err := models.SetupDatabase("windwalker.sqlite")
 	if err != nil {
 		log.Fatalln("Failed to connect to database: ", err)
 	}
