@@ -2,12 +2,68 @@ package main
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"windwalker/models"
+
+	"github.com/gin-gonic/gin"
 )
 
+func (s *Server) GetCollegeProfile(ctx *gin.Context) {
+	db := GetDatabase(ctx)
+	id := ctx.MustGet("ID").(string)
+	var profile models.CollegeProfile
+	if err := db.Where("user_id = ?", id).First(&profile).Error; err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+	NewSuccessResponse(ctx, profile)
+
+}
+func (s *Server) UpdateCollegeProfile(ctx *gin.Context) {
+	db := GetDatabase(ctx)
+	id, _ := strconv.ParseUint(ctx.MustGet("ID").(string), 10, 64)
+
+	var data models.CollegeProfile
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		_ = ctx.Error(errors.New("profile/invalid-input"))
+		return
+	}
+
+	var profile models.CollegeProfile
+	if err := db.
+		Where(models.CollegeProfile{UserID: uint(id)}).
+		Attrs(data).
+		FirstOrCreate(&profile).
+		Error; err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+
+	profile.Name = data.Name
+	profile.Address = data.Address
+	profile.Phone = data.Phone
+	profile.Type = data.Type
+	if err := db.Save(profile).Error; err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+
+	NewSuccessResponse(ctx, "profile updated")
+}
+
 func (s *Server) GetStudents(ctx *gin.Context) {
+	db := GetDatabase(ctx)
+	id := ctx.MustGet("ID").(string)
+	var user models.User
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
+	var users []models.User
+	if err := db.Model(&user).Association("AssociatedUsers").Find(&users); err != nil {
+		_ = ctx.Error(errors.New("misc/internal-server-error"))
+		return
+	}
 }
 
 func (s *Server) GetCompanies(ctx *gin.Context) {
@@ -70,4 +126,6 @@ func (s *Server) DeleteCompany(ctx *gin.Context) {
 }
 
 func (s *Server) GetPosts(ctx *gin.Context) {
+	// db := GetDatabase(ctx)
+	// db.
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,5 +22,20 @@ func (s *Server) NoMethod(ctx *gin.Context) {
 // Common Handlers
 
 func (s *Server) GetOnboarding(ctx *gin.Context) {
+	db := GetDatabase(ctx)
+	id := ctx.MustGet("ID").(string)
+	role := ctx.MustGet("ROLE").(string)
+
+	var count int64
+	if role == "user" {
+		db.Raw("select count(*) from profiles where user_id = ?", id).Scan(&count)
+	} else {
+		db.Raw("select count(*) from college_profiles where user_id = ?", id).Scan(&count)
+	}
+	if count == 0 {
+		NewSuccessResponse(ctx, false)
+	} else {
+		NewSuccessResponse(ctx, true)
+	}
 
 }
