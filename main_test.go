@@ -2,22 +2,22 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"windwalker/models"
+	"windwalker/ent"
 
 	"github.com/stretchr/testify/assert"
 )
 
 type AuthResponse struct {
-	ID           int    `json:"id"`
-	Role         string `json:"role"`
-	Token        string `json:"token"`
-	RefreshToken string `json:"refresh_token"`
+	ID    string `json:"id"`
+	Role  string `json:"role"`
+	Token string `json:"token"`
 }
 
 type ErrorResponse struct {
@@ -26,11 +26,15 @@ type ErrorResponse struct {
 }
 
 func TestMain(t *testing.T) {
-	db, err := models.SetupDatabase(":memory:")
-	assert.NoError(t, err, "Database should setup correctly.")
-	r := SetupRouter(db)
+	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	assert.NoError(t, err, "failed to open database")
+	// Run the auto migration tool.
+	err = client.Schema.Create(context.Background())
+	assert.NoError(t, err, "failed to migrate database")
+
+	r := SetupRouter(client)
 	t.Run("HealthCheckHandler", func(t *testing.T) {
-		req, _ := http.NewRequest("GET", "/v1/health", nil)
+		req, _ := http.NewRequest("GET", "/health", nil)
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 
@@ -52,8 +56,7 @@ func TestMain(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.NotEmpty(t, resp.Token)
-		assert.NotEmpty(t, resp.RefreshToken)
-		assert.Equal(t, "user", resp.Role)
+		assert.Equal(t, "student", resp.Role)
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
@@ -85,8 +88,7 @@ func TestMain(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.NotEmpty(t, resp.Token)
-		assert.NotEmpty(t, resp.RefreshToken)
-		assert.Equal(t, "user", resp.Role)
+		assert.Equal(t, "student", resp.Role)
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
@@ -102,7 +104,7 @@ func TestMain(t *testing.T) {
 		err = json.Unmarshal(body, &resp)
 		assert.NoError(t, err)
 
-		assert.Equal(t, "auth/account-nonexistent", resp.Code)
+		assert.Equal(t, "auth/user-not-found", resp.Code)
 	})
 
 	t.Run("LoginHandler should not login with invalid password", func(t *testing.T) {
@@ -117,6 +119,6 @@ func TestMain(t *testing.T) {
 		err = json.Unmarshal(body, &resp)
 		assert.NoError(t, err)
 
-		assert.Equal(t, "auth/password-invalid", resp.Code)
+		assert.Equal(t, "auth/invalid-password", resp.Code)
 	})
 }
