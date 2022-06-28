@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/rs/xid"
 )
 
 type CustomClaims struct {
@@ -25,7 +26,14 @@ func WithAuthentication(secret string) gin.HandlerFunc {
 			return []byte(secret), nil
 		})
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			ctx.Set("ID", claims.Subject)
+			id, err := xid.FromString(claims.Subject)
+			if err != nil {
+				ctx.Abort()
+				_ = ctx.Error(errors.New("auth/token-parsing-failed"))
+				return
+			}
+
+			ctx.Set("ID", id)
 			ctx.Set("ROLE", claims.Role)
 			ctx.Next()
 		} else {

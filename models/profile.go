@@ -1,16 +1,5 @@
 package models
 
-type Profile struct {
-	BaseModel
-	BasicProfile        BasicProfile        `gorm:"embedded" json:"basic_profile,omitempty"`
-	AcademicProfile     []AcademicProfile   `json:"academic_profile,omitempty"`
-	WorkProfile         []WorkProfile       `json:"work_profile,omitempty"`
-	AdditionalDocuments AdditionalDocuments `gorm:"embedded" json:"additional_documents,omitempty"`
-
-	// Reference to User
-	UserID uint `json:"-"`
-}
-
 type BasicProfile struct {
 	Name        string `json:"name,omitempty" binding:"required"`
 	Phone       string `json:"phone,omitempty" binding:"required"`
@@ -20,7 +9,6 @@ type BasicProfile struct {
 }
 
 type AcademicProfile struct {
-	BaseModel
 	Course     string `json:"course,omitempty" binding:"required"`
 	Institute  string `json:"institute,omitempty" binding:"required"`
 	Board      string `json:"board,omitempty" binding:"required"`
@@ -29,21 +17,14 @@ type AcademicProfile struct {
 	StartDate  string `json:"start_date,omitempty" binding:"required"`
 	EndDate    string `json:"end_date,omitempty" binding:"required"`
 	Marks      string `json:"marks,omitempty" binding:"required"`
-
-	// Reference to Profile
-	ProfileID uint `json:"-"`
 }
 
 type WorkProfile struct {
-	BaseModel
 	Company   string `json:"company,omitempty" binding:"required"`
 	StartDate string `json:"start_date,omitempty" binding:"required"`
 	EndDate   string `json:"end_date,omitempty" binding:"required"`
 	Salary    string `json:"salary,omitempty" binding:"required"`
 	Position  string `json:"position,omitempty" binding:"required"`
-
-	// Reference to Profile
-	ProfileID uint `json:"-"`
 }
 
 type AdditionalDocuments struct {
@@ -54,22 +35,13 @@ type AdditionalDocuments struct {
 }
 
 type CollegeProfile struct {
-	BaseModel
-	Name        string       `json:"name,omitempty" binding:"required"`
-	Phone       string       `json:"phone,omitempty" binding:"required"`
-	Address     string       `json:"address,omitempty" binding:"required"`
-	Type        string       `json:"type,omitempty" binding:"required"`
-	Departments []Department `json:"-"`
-
-	// Reference
-	UserID uint `json:"-"`
+	Name    string `json:"name,omitempty" binding:"required"`
+	Phone   string `json:"phone,omitempty" binding:"required"`
+	Address string `json:"address,omitempty" binding:"required"`
+	Type    string `json:"type,omitempty" binding:"required"`
 }
 
 type Department struct {
-	BaseModel
 	Name     string `json:"name,omitempty"`
 	Capacity uint   `json:"capacity,omitempty"`
-
-	// Reference
-	CollegeProfileID uint `json:"-"`
 }

@@ -1,27 +1,38 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
+	"windwalker/controllers"
+	"windwalker/ent"
 	"windwalker/middleware"
-	"windwalker/models"
+
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := models.SetupDatabase("windwalker.sqlite")
+	// client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	client, err := ent.Open("sqlite3", "file:ent.sqlite?cache=shared&_fk=1")
 	if err != nil {
-		log.Fatalln("Failed to connect to database: ", err)
+		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
-	if err := SetupRouter(db).Run(); err != nil {
-		log.Fatalln("Failed to start: ", err)
+	defer client.Close()
+
+	// Run the auto migration tool.
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+
+	if err := SetupRouter(client).Run(); err != nil {
+		log.Fatalf("failed to start server: %v ", err)
 	}
 }
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(client *ent.Client) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
@@ -29,9 +40,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		AllowHeaders:    []string{"Authorization", "Content-Type"},
 		MaxAge:          12 * time.Hour,
 	}))
-	router.Use(middleware.WithDatabase(db))
 	router.Use(middleware.ErrorHandler())
-	SetupRoutes(router)
+	controller := controllers.Controller{Client: client}
+	controller.SetupRoutes(router)
 
 	return router
 }
